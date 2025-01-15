@@ -2,6 +2,10 @@
 
 this is a modular boilerplate for building mobile applications using [Expo](https://expo.dev/). This boilerplate is designed to provide a solid foundation for your projects, with essential tools and configurations for modern app development.
 
+## PREVIEW
+
+![Preview](./docs/reference.png)
+
 ## Features
 
 - **Expo Managed Workflow**: Quick setup and easy development.
