@@ -31,7 +31,7 @@ export default function SignIn() {
       <Divider withText={false} />
       <HStack className="justify-center items-center">
         <Text>Don't you have an account? </Text>
-        <Button variant="link" size="sm">
+        <Button variant="link" size="md">
           <ButtonText className="text-blue-500">Sign up</ButtonText>
         </Button>
       </HStack>
