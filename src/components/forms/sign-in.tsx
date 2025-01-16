@@ -11,6 +11,7 @@ import { Text } from "../ui/text";
 import { Input, InputField } from "../ui/input";
 import { Button, ButtonText } from "../ui/button";
 import { HStack } from "../ui/hstack";
+import { emailValidator, validatePassword } from "@/src/utils/validators";
 
 interface SignInFormProps {
   email: string;
@@ -29,16 +30,6 @@ const SignInForm: FC<SignInFormProps> = ({
   setPasswordValue,
   handleSubmit,
 }) => {
-  const emailValidator = (email: string) => {
-    return new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(email);
-  };
-
-  const validatePassword = (password: string) => {
-    return new RegExp(
-      /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{6,}$/
-    ).test(password);
-  };
-
   const [isInvalidEmail, setInvalidEmail] = useState(false);
   const [isInvalidPassword, setInvalidPassword] = useState(false);
 

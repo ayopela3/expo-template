@@ -3,15 +3,22 @@ import "./global.css";
 
 import { useColorScheme } from "react-native";
 import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthStack } from "./src/navigation/AuthStack";
 import { DashboardStack } from "./src/navigation/DashboardStack";
+import { useBoundStore } from "./src/store";
+import { useEffect } from "react";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const store = useBoundStore();
+  useEffect(() => {
+    // let's clear the skip onboarding for now
+    store.setOnboardingDone(false);
+  }, []);
   return (
     <View
       style={{

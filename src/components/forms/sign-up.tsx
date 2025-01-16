@@ -12,6 +12,7 @@ import { Input, InputField } from "../ui/input";
 import { Button, ButtonText } from "../ui/button";
 import { HStack } from "../ui/hstack";
 import { KeyboardAvoidingView } from "react-native";
+import { emailValidator, validatePassword } from "@/src/utils/validators";
 
 interface SignUpFormProps {
   email: string;
@@ -20,7 +21,11 @@ interface SignUpFormProps {
   password: string;
   fullName: string;
   setFullNameValue: (fullName: string) => void;
-  handleSubmit: (payload: { email: string; password: string }) => void;
+  handleSubmit: (payload: {
+    email: string;
+    password: string;
+    fullName: string;
+  }) => void;
   size?: "sm" | "md" | "lg";
 }
 
@@ -38,28 +43,34 @@ const SignUpForm: FC<SignUpFormProps> = ({
     "Must be a at least 6 characters long, contains at least one, uppercase letter with at least one special character.";
   const [retypedPassword, setRetypedPassword] = useState<string>("");
 
-  const emailValidator = (email: string) => {
-    return new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(email);
-  };
+  const [isInvalidEmail, setInvalidEmail] = useState(false);
+  const [isInvalidPassword, setInvalidPassword] = useState(false);
+  const [isPassowrdNotMatch, setIsPasswordNotMatch] = useState(false);
 
-  const validatePassword = (password: string) => {
-    return new RegExp(
-      /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{6,}$/
-    ).test(password);
+  const clearErrors = () => {
+    setInvalidEmail(false);
+    setInvalidPassword(false);
+    setIsPasswordNotMatch(false);
   };
 
   return (
     <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={70}>
       <VStack testID="sign-up-form">
-        <FormControl isRequired isInvalid={emailValidator(email)} size="md">
+        <FormControl isRequired isInvalid={isInvalidEmail} size="md">
           <FormControlLabel>
             <FormControlLabelText>Email Address</FormControlLabelText>
           </FormControlLabel>
           <Input className="my-1" size={size}>
             <InputField
               type="text"
+              autoCapitalize="none"
               value={email}
-              onChangeText={(text) => setEmailValue(text)}
+              onChangeText={(text) => {
+                emailValidator(text)
+                  ? setInvalidEmail(false)
+                  : setInvalidEmail(true);
+                setEmailValue(text);
+              }}
             />
           </Input>
           <FormControlError>
@@ -79,11 +90,14 @@ const SignUpForm: FC<SignUpFormProps> = ({
               }}
             />
           </Input>
+          <FormControlError>
+            <FormControlErrorText>full name is required.</FormControlErrorText>
+          </FormControlError>
         </FormControl>
         <FormControl
           isRequired
           className="mt-4"
-          isInvalid={emailValidator(email)}
+          isInvalid={isInvalidPassword}
           size="md"
         >
           <FormControlLabel>
@@ -94,7 +108,10 @@ const SignUpForm: FC<SignUpFormProps> = ({
               type="password"
               value={password}
               onChangeText={(text) => {
-                validatePassword(text) && setPasswordValue(text);
+                validatePassword(text)
+                  ? setInvalidPassword(false)
+                  : setInvalidPassword(true);
+                setPasswordValue(text);
               }}
             />
           </Input>
@@ -116,12 +133,12 @@ const SignUpForm: FC<SignUpFormProps> = ({
               type="password"
               value={retypedPassword}
               onChangeText={(text) => {
-                validatePassword(text) && setRetypedPassword(text);
+                setRetypedPassword(text);
               }}
             />
           </Input>
           <FormControlError>
-            <FormControlErrorText>{errorMsg}</FormControlErrorText>
+            <FormControlErrorText>Password does not match</FormControlErrorText>
           </FormControlError>
         </FormControl>
         <HStack className="justify-between">
@@ -129,7 +146,26 @@ const SignUpForm: FC<SignUpFormProps> = ({
             className="mt-4 w-full rounded-[8px]"
             size={size}
             testID="submit-button"
-            onPress={() => handleSubmit({ email, password })}
+            onPress={() => {
+              clearErrors();
+              if (
+                emailValidator(email) &&
+                validatePassword(password) &&
+                retypedPassword === password
+              ) {
+                handleSubmit({ email, password, fullName });
+              } else {
+                if (!emailValidator(email)) {
+                  setInvalidEmail(true);
+                }
+                if (!validatePassword(password)) {
+                  setInvalidPassword(true);
+                }
+                if (retypedPassword !== password) {
+                  setIsPasswordNotMatch(true);
+                }
+              }
+            }}
           >
             <ButtonText>Sign up</ButtonText>
           </Button>

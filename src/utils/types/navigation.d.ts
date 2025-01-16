@@ -4,3 +4,9 @@ export interface AuthStackParams {
   Onboarding: undefined;
   NotFound: undefined;
 }
+
+export interface DashboardStackParams {
+  Onboarding: undefined;
+  Home: undefined;
+  NotFound: undefined;
+}
