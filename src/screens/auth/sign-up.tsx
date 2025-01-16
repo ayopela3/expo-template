@@ -14,6 +14,7 @@ import { ScrollView } from "react-native";
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
 
   const navigation = useNavigation<NavigationProp<AuthStackParams>>();
 
@@ -26,14 +27,12 @@ export default function SignUp() {
         <SignUpForm
           email={email}
           password={password}
+          fullName={fullName}
           setEmailValue={setEmail}
+          setFullNameValue={setFullName}
           setPasswordValue={setPassword}
           handleSubmit={(payload) => {
             console.log("wow", payload);
-          }}
-          fullName={""}
-          setFullNameValue={function (fullName: string): void {
-            throw new Error("Function not implemented.");
           }}
         />
         <Divider text="or" />
