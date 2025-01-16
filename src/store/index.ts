@@ -2,8 +2,9 @@ import { create } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createGlobalSlice, GlobalSlice } from "./slices/GlobalSlice";
+import { createUserSlice, UserSlice } from "./slices/UserSlice";
 
-type BoundState = GlobalSlice;
+type BoundState = GlobalSlice & UserSlice;
 
 /**
  * this is the store that will handle the slices
@@ -13,6 +14,7 @@ export const useBoundStore = create<BoundState>()(
   persist(
     (...a) => ({
       ...createGlobalSlice(...a),
+      ...createUserSlice(...a),
     }),
     {
       name: "app-bound-store",
