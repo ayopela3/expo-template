@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   FormControl,
   FormControlError,
@@ -39,25 +39,39 @@ const SignInForm: FC<SignInFormProps> = ({
     ).test(password);
   };
 
+  const [isInvalidEmail, setInvalidEmail] = useState(false);
+  const [isInvalidPassword, setInvalidPassword] = useState(false);
+
+  const clearErrors = () => {
+    setInvalidEmail(false);
+    setInvalidPassword(false);
+  };
+
   return (
     <VStack testID="sign-in-form">
-      <FormControl isInvalid={emailValidator(email)} size="md">
+      <FormControl isInvalid={isInvalidEmail} size="md">
         <FormControlLabel>
           <FormControlLabelText>Email Address</FormControlLabelText>
         </FormControlLabel>
         <Input className="my-1" size={size}>
           <InputField
             type="text"
+            autoCapitalize="none"
             value={email}
-            onChangeText={(text) => setEmailValue(text)}
+            onChangeText={(text) => {
+              setEmailValue(text);
+              setInvalidEmail(!emailValidator(text));
+            }}
           />
         </Input>
-        <FormControlError>
-          <FormControlErrorText>Must be a valid email.</FormControlErrorText>
-        </FormControlError>
+        {isInvalidEmail && (
+          <FormControlError>
+            <FormControlErrorText>Must be a valid email.</FormControlErrorText>
+          </FormControlError>
+        )}
       </FormControl>
 
-      <FormControl className="mt-4" isInvalid={emailValidator(email)} size="md">
+      <FormControl className="mt-4" isInvalid={isInvalidPassword} size="md">
         <FormControlLabel>
           <FormControlLabelText>Password</FormControlLabelText>
         </FormControlLabel>
@@ -66,16 +80,19 @@ const SignInForm: FC<SignInFormProps> = ({
             type="password"
             value={password}
             onChangeText={(text) => {
-              validatePassword(text) && setPasswordValue(text);
+              setPasswordValue(text);
+              setInvalidPassword(!validatePassword(text));
             }}
           />
         </Input>
-        <FormControlError>
-          <FormControlErrorText>
-            Must be a at least 6 characters long, contains at least one
-            Uppercase letter with at least one special character.
-          </FormControlErrorText>
-        </FormControlError>
+        {isInvalidPassword && (
+          <FormControlError>
+            <FormControlErrorText>
+              Must be at least 6 characters long, contain at least one uppercase
+              letter, and at least one special character.
+            </FormControlErrorText>
+          </FormControlError>
+        )}
       </FormControl>
       <HStack className="justify-between">
         <Button variant="link" className="mt-4">
@@ -85,7 +102,14 @@ const SignInForm: FC<SignInFormProps> = ({
           className="mt-4 rounded-[8px]"
           size={size}
           testID="submit-button"
-          onPress={() => handleSubmit({ email, password })}
+          onPress={() => {
+            if (isInvalidEmail || isInvalidPassword) {
+              return;
+            } else {
+              clearErrors();
+              handleSubmit({ email, password });
+            }
+          }}
         >
           <ButtonText>Sign in</ButtonText>
         </Button>
